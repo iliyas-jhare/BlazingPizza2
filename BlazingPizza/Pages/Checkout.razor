@@ -1,0 +1,61 @@
+﻿@page "/checkout"
+
+@inject OrderState OrderState
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<div class="top-bar">
+    <a class="logo" href="">
+        <img src="img/logo.svg" />
+    </a>
+    <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
+        <img src="img/pizza-slice.svg" />
+        <div>Get Pizza</div>
+    </NavLink>
+    <NavLink href="myorders" class="nav-tab">
+        <img src="img/bike.svg" />
+        <div>My Orders</div>
+    </NavLink>
+</div>
+
+<div class="main">
+    <div class="checkout-cols">
+        <div class="checkout-order-details">
+            <h4>Review order</h4>
+            @foreach (var pizza in order.Pizzas)
+            {
+                <p>
+                    <strong>
+                        @(pizza.Size)"
+                        @pizza.Special.Name
+                        (£@pizza.GetFormattedTotalPrice())
+                    </strong>
+                </p>
+            }
+            <p>
+                <strong>
+                    Total price:
+                    £@order.GetFormattedTotalPrice()
+                </strong>
+            </p>
+        </div>
+    </div>
+    <button class="checkout-button btn btn-warning" @onclick="PlaceOrder" disabled=@orderInProgress>
+        Place order
+    </button>
+</div>
+
+@code
+{
+    private Order order => OrderState.Order;
+    private bool orderInProgress;
+
+    private async Task PlaceOrder()
+    {
+        orderInProgress = true;
+        var response = await HttpClient.PostAsJsonAsync(NavigationManager.BaseUri + "orders", OrderState.Order);
+        var orderdId = await response.Content.ReadFromJsonAsync<int>();
+        OrderState.ResetOrder();
+        NavigationManager.NavigateTo("/myorders");
+    }
+}

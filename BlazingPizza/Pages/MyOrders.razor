@@ -1,0 +1,78 @@
+﻿@page "/myorders"
+
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<div class="top-bar">
+    <a class="logo" href="">
+        <img src="img/logo.svg" />
+    </a>
+    <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
+        <img src="img/pizza-slice.svg" />
+        <div>Get Pizza</div>
+    </NavLink>
+    <NavLink href="myorders" class="nav-tab">
+        <img src="img/bike.svg" />
+        <div>My Orders</div>
+    </NavLink>
+</div>
+
+<div class="main">
+    @if (ordersWithStatus is null)
+    {
+        <text>Loading...</text>
+    }
+    else if (ordersWithStatus.Any() == false)
+    {
+        <h2>No orders placed yet</h2>
+        <a class="btn btn-success" href="">Order some pizzas</a>
+    }
+    else
+    {
+        <div class="list-group orders-list">
+            @foreach (var ows in ordersWithStatus)
+            {
+                <div class="list-group-item">
+                    <div class="col">
+                        <h5>@ows.Order.CreatedTime.ToLongDateString()</h5>
+                        Items:
+                        <strong>@ows.Order.Pizzas.Count()</strong>
+                        Total price:
+                        <strong>£@ows.Order.GetFormattedTotalPrice()</strong>
+                    </div>
+                    <div class="col">
+                        Status:
+                        <strong>@ows.StatusText</strong>
+                    </div>
+                    @if (ows.StatusText != "Delivered")
+                    {
+                        <div class="col flex-grow-0">
+                            <a class="btn btn-success" href="myorders">
+                                Track &gt;
+                            </a>
+                            @*<NavLink href="myorders" class="btn btn-success">
+                                <div>Track &gt;</div>
+                            </NavLink>*@
+@*                            <button class="btn btn-success" @onclick="OnTrack">Track &gt;</button>
+*@                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code
+{
+    private List<OrderWithStatus> ordersWithStatus = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ordersWithStatus = await HttpClient.GetFromJsonAsync<List<OrderWithStatus>>($"{NavigationManager.BaseUri}orders");
+    }
+
+    //private void OnTrack()
+    //{
+    //    NavigationManager.NavigateTo("/myorders");
+    //}
+}
