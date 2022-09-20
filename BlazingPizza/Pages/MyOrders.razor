@@ -3,20 +3,6 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 
-<div class="top-bar">
-    <a class="logo" href="">
-        <img src="img/logo.svg" />
-    </a>
-    <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
-        <img src="img/pizza-slice.svg" />
-        <div>Get Pizza</div>
-    </NavLink>
-    <NavLink href="myorders" class="nav-tab">
-        <img src="img/bike.svg" />
-        <div>My Orders</div>
-    </NavLink>
-</div>
-
 <div class="main">
     @if (ordersWithStatus is null)
     {
@@ -47,14 +33,10 @@
                     @if (ows.StatusText != "Delivered")
                     {
                         <div class="col flex-grow-0">
-                            <a class="btn btn-success" href="myorders">
+                            <a class="btn btn-success" href="myorders/@ows.Order.OrderId">
                                 Track &gt;
                             </a>
-                            @*<NavLink href="myorders" class="btn btn-success">
-                                <div>Track &gt;</div>
-                            </NavLink>*@
-@*                            <button class="btn btn-success" @onclick="OnTrack">Track &gt;</button>
-*@                        </div>
+                        </div>
                     }
                 </div>
             }
@@ -70,9 +52,4 @@
     {
         ordersWithStatus = await HttpClient.GetFromJsonAsync<List<OrderWithStatus>>($"{NavigationManager.BaseUri}orders");
     }
-
-    //private void OnTrack()
-    //{
-    //    NavigationManager.NavigateTo("/myorders");
-    //}
 }
