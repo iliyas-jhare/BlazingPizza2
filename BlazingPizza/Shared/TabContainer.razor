@@ -1,0 +1,45 @@
+﻿@using BlazingPizza.Shared
+
+<CascadingValue Value="this">
+    <div class="row align-items-start">
+        <ul class="nav nav-pills flex-column">
+            @foreach(TabPage tabPage in tabPages)
+            {
+                <li class="nav-item pb-1">
+                    <a class="nav-link @GetActiveTab(tabPage)" onclick=@(() => ActivatePage(tabPage))>
+                        @tabPage.Title
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="flex-fill px-4">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code 
+{
+    private List<TabPage> tabPages = new List<TabPage>();
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    public TabPage CurrentPage { get; set; }
+
+    internal void AddPage(TabPage page)
+    {
+        tabPages.Add(page);
+
+        if (tabPages.Count == 1)
+        {
+            ActivatePage(page);
+        }
+
+        StateHasChanged();
+    }
+
+    private string GetActiveTab(TabPage page) => page == CurrentPage ? "active bg-dange" : "bg-light";
+
+    private void ActivatePage(TabPage page) => CurrentPage = page;
+}

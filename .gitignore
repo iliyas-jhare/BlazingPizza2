@@ -396,3 +396,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Local database items
+*/pizzas.db-wal
+*/pizzas.db-shm
+*/pizzas.db

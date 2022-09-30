@@ -3,6 +3,7 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject OrderState OrderState
+@inject IJSRuntime JSR
 
 <div class="main">
     <ul class="pizza-cards">
@@ -38,7 +39,7 @@
             @foreach (var configuredPizza in order.Pizzas)
             {
                 <div class="cart-item">
-                    <a @onclick="@(() => OrderState.RemoveConfiguredPizza(configuredPizza))" class="delete-item">x</a>
+                    <a @onclick="@(async () => await RemovePizza(configuredPizza))" class="delete-item">x</a>
                     <div class="title">@(configuredPizza.Size)" @configuredPizza.Special.Name</div>
                     <div class="item-price">
                         @configuredPizza.GetFormattedTotalPrice()
@@ -69,5 +70,34 @@
     protected override async Task OnInitializedAsync()
     {
         specials = await HttpClient.GetFromJsonAsync<List<PizzaSpecial>>(NavigationManager.BaseUri + "specials");
+    }
+
+    private async Task RemovePizza(Pizza pizza)
+    {
+        var messageParams = new
+        {
+            title = "Are you sure?",
+            text = $"Do you want to remove the {pizza.Special.Name} from your order?",
+            icon = "warning",
+            buttons = new
+            {
+                abort = new 
+                {
+                    text = "Leave it in my order", 
+                    value = false
+                },
+                confirm = new 
+                { 
+                    text = "Remove pizza", 
+                    value = true
+                }
+            }, 
+            dangerMode = true
+        };
+
+        if (await JSR.InvokeAsync<bool>("swal", messageParams))
+        {
+            OrderState.RemoveConfiguredPizza(pizza);
+        }
     }
 }

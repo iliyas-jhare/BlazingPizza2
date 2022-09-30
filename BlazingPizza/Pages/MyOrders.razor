@@ -15,32 +15,42 @@
     }
     else
     {
-        <div class="list-group orders-list">
-            @foreach (var ows in ordersWithStatus)
-            {
-                <div class="list-group-item">
-                    <div class="col">
-                        <h5>@ows.Order.CreatedTime.ToLongDateString()</h5>
-                        Items:
-                        <strong>@ows.Order.Pizzas.Count()</strong>
-                        Total price:
-                        <strong>£@ows.Order.GetFormattedTotalPrice()</strong>
-                    </div>
-                    <div class="col">
-                        Status:
-                        <strong>@ows.StatusText</strong>
-                    </div>
-                    @if (ows.StatusText != "Delivered")
-                    {
-                        <div class="col flex-grow-0">
-                            <a class="btn btn-success" href="myorders/@ows.Order.OrderId">
-                                Track &gt;
-                            </a>
+        <TabContainer>
+            <div class="track-order">
+                @foreach (var ows in ordersWithStatus)
+                {
+                    <TabPage Title=@ows.Order.CreatedTime.ToLongDateString()>
+                        <div class="track-order-title">
+                            <h2>Order placed: @ows.Order.CreatedTime.ToLongDateString()</h2>
+                            <p class="ml-auto mb-0">
+                                Items: <strong>@ows.Order.Pizzas.Count()</strong>
+                                Total price: <strong>£@ows.Order.GetFormattedTotalPrice()</strong>
+                                @if (ows.StatusText != "Delivered")
+                                {
+                                    <a href="myorders/@ows.Order.OrderId" class="btn btn-success ml-4">
+                                        Track &gt;
+                                    </a>
+                                }
+                            </p>
                         </div>
-                    }
-                </div>
-            }
-        </div>
+                        <div class="track-order-body">
+                            <div class="track-order-details">
+                                @foreach (var pizza in ows.Order.Pizzas)
+                                {
+                                    <p>
+                                        <strong>
+                                            @(pizza.Size)"
+                                            @pizza.Special.Name
+                                            (£@pizza.GetFormattedTotalPrice())
+                                        </strong>
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    </TabPage>
+                }
+            </div>
+        </TabContainer>
     }
 </div>
 

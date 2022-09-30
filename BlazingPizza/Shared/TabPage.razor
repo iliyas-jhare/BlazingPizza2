@@ -1,0 +1,30 @@
+﻿@using BlazingPizza.Shared
+
+@if (Container.CurrentPage == this)
+{
+    @ChildContent
+}
+
+@code 
+{
+    [CascadingParameter]
+    private TabContainer Container { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Container is null)
+        {
+            throw new ArgumentNullException(nameof(Container), "Cannot create a tab page without a tab container");
+        }
+
+        base.OnInitialized();
+
+        Container.AddPage(this);
+    }
+}

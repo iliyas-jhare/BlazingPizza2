@@ -29,5 +29,31 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert@latest/dist/sweetalert.min.js"></script>
+    <script language="javascript">
+        var objRef;
+
+        window.populateObjRef = (ref) => 
+        {
+            objRef = ref;
+            refreshOrderStatus();
+        };
+
+        window.refreshOrderStatus = async () => 
+        {
+            var statusText = await objRef.invokeMethodAsync('GetOrderStatus');
+            document.querySelector('#orderStatus').innerText = statusText;
+            if (statusText != "Delivered")
+            {
+                setTimeout(function () { refreshOrderStatus(); }, 3000);
+            }
+            else 
+            {
+                document.querySelector('#progressSpinner').remove();
+            }
+        };
+
+        window.disableElement = (element) => element.disabled = "disabled";
+    </script>
 </body>
 </html>
